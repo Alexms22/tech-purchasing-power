@@ -1,0 +1,50 @@
+# -------------------------------------------------------------------
+# 1. FICHEIROS DE AMBIENTE E SEGREDOS
+# -------------------------------------------------------------------
+# Ignora sempre os ficheiros com passwords
+.env
+.env.*
+!.env.example
+
+# -------------------------------------------------------------------
+# 2. NODE-RED
+# -------------------------------------------------------------------
+# Ignora dependências pesadas e, o mais importante, os ficheiros de credenciais gerados pelo Node-RED
+node_red/node_modules/
+node_red/.config.json
+node_red/.sessions.json
+node_red/*_cred.json
+node_red/flows_cred.json
+node_red/.flows.json.backup
+
+# -------------------------------------------------------------------
+# 3. KNIME ANALYTICS PLATFORM
+# -------------------------------------------------------------------
+# Ignora ficheiros de bloqueio e metadados do próprio IDE
+knime_workspace/.metadata/
+knime_workspace/.knimeLock
+
+# Ignora dados temporários e intermédios guardados na memória dos nós
+knime_workspace/*/port_*/
+knime_workspace/*/internal/
+
+# -------------------------------------------------------------------
+# 4. SISTEMAS OPERATIVOS E EDITORES
+# -------------------------------------------------------------------
+# Ficheiros temporários do Windows e macOS
+Thumbs.db
+.DS_Store
+
+# Ficheiros de configuração locais do Visual Studio Code
+.vscode/
+
+# -------------------------------------------------------------------
+# 5. LOGS E DADOS VOLUMOSOS
+# -------------------------------------------------------------------
+# Ficheiros de log gerais
+*.log
+
+#  ---------   ATENÇÃO   ---------
+# Se o dataset do Custo de Vida for gigante (ex: +50MB), descomentar a linha abaixo para o ignorar. 
+# Caso contrário, o CSV fica para conseguir correr no projeto.
+# knime_workspace/dados/*.csv

@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tech_power_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: tech_power_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  nodered:
+    image: nodered/node-red:latest
+    container_name: tech_power_nodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered_data:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  nodered_data:
