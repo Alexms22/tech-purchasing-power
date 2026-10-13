@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="rules">
+            <entry key="array-size" type="xint" value="70"/>
+            <entry key="0" type="xstring" value="// 1. PADRONIZAÇÃO DO REINO UNIDO (UK) E IRLANDA"/>
+            <entry key="1" type="xstring" value="$Localizacao$ IN (&quot;England&quot;, &quot;Scotland&quot;, &quot;Wales&quot;, &quot;Northern Ireland&quot;, &quot;UK&quot;, &quot;Great Britain&quot;) =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="2" type="xstring" value="$Localizacao$ LIKE &quot;*England*&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="3" type="xstring" value="$Localizacao$ LIKE &quot;*Scotland*&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="4" type="xstring" value="$Localizacao$ LIKE &quot;*, UK&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="5" type="xstring" value="$Localizacao$ LIKE &quot;* - UK&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="6" type="xstring" value="// Cidades e vilas do Reino Unido"/>
+            <entry key="7" type="xstring" value="$Localizacao$ IN (&quot;London&quot;, &quot;Cheltenham&quot;, &quot;Cowes&quot;, &quot;Fareham&quot;, &quot;Luton&quot;, &quot;Stockport&quot;, &quot;Bedford&quot;, &quot;Maidenhead&quot;, &quot;Farnborough&quot;, &quot;Manchester&quot;, &quot;Birmingham&quot;, &quot;Leeds&quot;, &quot;Glasgow&quot;, &quot;Bristol&quot;, &quot;Liverpool&quot;, &quot;Edinburgh&quot;, &quot;Sheffield&quot;, &quot;Cambridge&quot;, &quot;Oxford&quot;, &quot;Belfast&quot;, &quot;Cardiff&quot;, &quot;Newcastle&quot;, &quot;Brighton&quot;, &quot;Reading&quot;, &quot;Southampton&quot;, &quot;Portsmouth&quot;, &quot;Nottingham&quot;, &quot;Leicester&quot;, &quot;Coventry&quot;, &quot;Hull&quot;, &quot;St. Albans&quot;, &quot;Derby&quot;, &quot;Plymouth&quot;, &quot;Stoke-on-Trent&quot;, &quot;Wolverhampton&quot;, &quot;Swansea&quot;, &quot;Aberdeen&quot;, &quot;Dundee&quot;, &quot;Salford&quot;, &quot;Aberdeenshire&quot;, &quot;Milton Keynes&quot;, &quot;Northampton&quot;, &quot;Norwich&quot;, &quot;Swindon&quot;, &quot;Southend-on-Sea&quot;, &quot;Middlesbrough&quot;, &quot;Peterborough&quot;, &quot;Bolton&quot;, &quot;Eastwood&quot;, &quot;Burton-on-Trent&quot;, &quot;Fratton&quot;, &quot;Chippenham&quot;, &quot;Newbury&quot;, &quot;Ipswich&quot;, &quot;Devon&quot;, &quot;Stevenage&quot;, &quot;Greater Manchester&quot;, &quot;Chesterfield&quot;, &quot;Lincoln&quot;) =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="8" type="xstring" value="$Localizacao$ LIKE &quot;London, *&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="9" type="xstring" value="$Localizacao$ LIKE &quot;*, England&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="10" type="xstring" value="$Localizacao$ LIKE &quot;*, Scotland&quot; =&gt; &quot;United Kingdom&quot;"/>
+            <entry key="11" type="xstring" value="// 2. PADRONIZAÇÃO DOS ESTADOS UNIDOS (USA) E CANADÁ"/>
+            <entry key="12" type="xstring" value="$Localizacao$ IN (&quot;US&quot;, &quot;USA&quot;, &quot;United States of America&quot;) =&gt; &quot;United States&quot;"/>
+            <entry key="13" type="xstring" value="$Localizacao$ LIKE &quot;*, USA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="14" type="xstring" value="$Localizacao$ LIKE &quot;* - USA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="15" type="xstring" value="$Localizacao$ LIKE &quot;*, US&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="16" type="xstring" value="$Localizacao$ LIKE &quot;*, NY&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="17" type="xstring" value="$Localizacao$ LIKE &quot;*, CA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="18" type="xstring" value="$Localizacao$ LIKE &quot;*, TX&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="19" type="xstring" value="$Localizacao$ LIKE &quot;*, WA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="20" type="xstring" value="$Localizacao$ LIKE &quot;*, IL&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="21" type="xstring" value="$Localizacao$ LIKE &quot;*, MA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="22" type="xstring" value="$Localizacao$ LIKE &quot;*, FL&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="23" type="xstring" value="$Localizacao$ LIKE &quot;*, VA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="24" type="xstring" value="$Localizacao$ LIKE &quot;*, CO&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="25" type="xstring" value="$Localizacao$ LIKE &quot;*, GA&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="26" type="xstring" value="$Localizacao$ = &quot;Remote - US Only&quot; =&gt; &quot;United States&quot;"/>
+            <entry key="27" type="xstring" value="// Cidades principais dos EUA"/>
+            <entry key="28" type="xstring" value="$Localizacao$ IN (&quot;New York&quot;, &quot;San Francisco&quot;, &quot;Seattle&quot;, &quot;Austin&quot;, &quot;Boston&quot;, &quot;Chicago&quot;, &quot;San Jose&quot;, &quot;Los Angeles&quot;, &quot;Atlanta&quot;, &quot;Denver&quot;, &quot;Dallas&quot;, &quot;San Diego&quot;, &quot;Portland&quot;, &quot;Washington&quot;, &quot;Miami&quot;) =&gt; &quot;United States&quot;"/>
+            <entry key="29" type="xstring" value="// Canadá"/>
+            <entry key="30" type="xstring" value="$Localizacao$ LIKE &quot;*, Canada&quot; =&gt; &quot;Canada&quot;"/>
+            <entry key="31" type="xstring" value="$Localizacao$ LIKE &quot;* - Canada&quot; =&gt; &quot;Canada&quot;"/>
+            <entry key="32" type="xstring" value="$Localizacao$ IN (&quot;Toronto&quot;, &quot;Vancouver&quot;, &quot;Montreal&quot;, &quot;Ottawa&quot;, &quot;Calgary&quot;) =&gt; &quot;Canada&quot;"/>
+            <entry key="33" type="xstring" value="// 3. PADRONIZAÇÃO DE PAÍSES EUROPEUS COMUNS EM TI"/>
+            <entry key="34" type="xstring" value="$Localizacao$ LIKE &quot;*, France&quot; =&gt; &quot;France&quot;"/>
+            <entry key="35" type="xstring" value="$Localizacao$ LIKE &quot;*, Germany&quot; =&gt; &quot;Germany&quot;"/>
+            <entry key="36" type="xstring" value="$Localizacao$ LIKE &quot;*, Netherlands&quot; =&gt; &quot;Netherlands&quot;"/>
+            <entry key="37" type="xstring" value="$Localizacao$ LIKE &quot;*, Spain&quot; =&gt; &quot;Spain&quot;"/>
+            <entry key="38" type="xstring" value="$Localizacao$ LIKE &quot;*, Portugal&quot; =&gt; &quot;Portugal&quot;"/>
+            <entry key="39" type="xstring" value="$Localizacao$ LIKE &quot;*, Italy&quot; =&gt; &quot;Italy&quot;"/>
+            <entry key="40" type="xstring" value="$Localizacao$ LIKE &quot;*, Ireland&quot; =&gt; &quot;Ireland&quot;"/>
+            <entry key="41" type="xstring" value="$Localizacao$ LIKE &quot;*, Poland&quot; =&gt; &quot;Poland&quot;"/>
+            <entry key="42" type="xstring" value="$Localizacao$ LIKE &quot;*, Switzerland&quot; =&gt; &quot;Switzerland&quot;"/>
+            <entry key="43" type="xstring" value="$Localizacao$ LIKE &quot;*, Sweden&quot; =&gt; &quot;Sweden&quot;"/>
+            <entry key="44" type="xstring" value="$Localizacao$ LIKE &quot;*, Romania&quot; =&gt; &quot;Romania&quot;"/>
+            <entry key="45" type="xstring" value="$Localizacao$ IN (&quot;Paris&quot;, &quot;Lyon&quot;, &quot;Berlin&quot;, &quot;Munich&quot;, &quot;Frankfurt&quot;, &quot;Hamburg&quot;, &quot;Amsterdam&quot;, &quot;Madrid&quot;, &quot;Barcelona&quot;, &quot;Lisbon&quot;, &quot;Porto&quot;, &quot;Milan&quot;, &quot;Rome&quot;, &quot;Dublin&quot;, &quot;Warsaw&quot;, &quot;Zurich&quot;, &quot;Geneva&quot;, &quot;Stockholm&quot;, &quot;Bucharest&quot;) =&gt; &quot;Europe (Hub)&quot;"/>
+            <entry key="46" type="xstring" value="$Localizacao$ IN (&quot;Czechia&quot;) =&gt; &quot;Czech Republic&quot;"/>
+            <entry key="47" type="xstring" value="$Localizacao$ IN (&quot;Slovak Republic&quot;) =&gt; &quot;Slovakia&quot;"/>
+            <entry key="48" type="xstring" value="$Localizacao$ IN (&quot;Macedonia&quot;) =&gt; &quot;North Macedonia&quot;"/>
+            <entry key="49" type="xstring" value="$Localizacao$ IN (&quot;Bosnia and Herzegovina&quot;) =&gt; &quot;Bosnia And Herzegovina&quot;"/>
+            <entry key="50" type="xstring" value="$Localizacao$ IN (&quot;Russian Federation&quot;) =&gt; &quot;Russia&quot;"/>
+            <entry key="51" type="xstring" value="// 4. RESTANTES PAÍSES DO MUNDO E PÓLOS ASIÁTICOS (Com Pune incluído)"/>
+            <entry key="52" type="xstring" value="$Localizacao$ LIKE &quot;*, India&quot; =&gt; &quot;India&quot;"/>
+            <entry key="53" type="xstring" value="$Localizacao$ LIKE &quot;* - India&quot; =&gt; &quot;India&quot;"/>
+            <entry key="54" type="xstring" value="$Localizacao$ IN (&quot;Bengaluru&quot;, &quot;Bangalore&quot;, &quot;Mumbai&quot;, &quot;Hyderabad&quot;, &quot;Pune&quot;, &quot;Chennai&quot;, &quot;New Delhi&quot;, &quot;Noida&quot;, &quot;Gurugram&quot;, &quot;Delhi&quot;) =&gt; &quot;India&quot;"/>
+            <entry key="55" type="xstring" value="$Localizacao$ LIKE &quot;*, Australia&quot; =&gt; &quot;Australia&quot;"/>
+            <entry key="56" type="xstring" value="$Localizacao$ LIKE &quot;* - Australia&quot; =&gt; &quot;Australia&quot;"/>
+            <entry key="57" type="xstring" value="$Localizacao$ IN (&quot;Sydney&quot;, &quot;Melbourne&quot;, &quot;Brisbane&quot;, &quot;Perth&quot;) =&gt; &quot;Australia&quot;"/>
+            <entry key="58" type="xstring" value="$Localizacao$ LIKE &quot;*, Brazil&quot; =&gt; &quot;Brazil&quot;"/>
+            <entry key="59" type="xstring" value="$Localizacao$ IN (&quot;São Paulo&quot;, &quot;Rio de Janeiro&quot;, &quot;Curitiba&quot;, &quot;Belo Horizonte&quot;) =&gt; &quot;Brazil&quot;"/>
+            <entry key="60" type="xstring" value="$Localizacao$ LIKE &quot;*, Singapore&quot; =&gt; &quot;Singapore&quot;"/>
+            <entry key="61" type="xstring" value="$Localizacao$ IN (&quot;Singapore&quot;) =&gt; &quot;Singapore&quot;"/>
+            <entry key="62" type="xstring" value="$Localizacao$ LIKE &quot;*, Japan&quot; =&gt; &quot;Japan&quot;"/>
+            <entry key="63" type="xstring" value="$Localizacao$ IN (&quot;Tokyo&quot;, &quot;Osaka&quot;, &quot;Kyoto&quot;) =&gt; &quot;Japan&quot;"/>
+            <entry key="64" type="xstring" value="$Localizacao$ LIKE &quot;*, China&quot; =&gt; &quot;China&quot;"/>
+            <entry key="65" type="xstring" value="$Localizacao$ IN (&quot;Beijing&quot;, &quot;Shanghai&quot;, &quot;Shenzhen&quot;) =&gt; &quot;China&quot;"/>
+            <entry key="66" type="xstring" value="$Localizacao$ IN (&quot;UAE&quot;, &quot;Dubai&quot;, &quot;Abu Dhabi&quot;) =&gt; &quot;United Arab Emirates&quot;"/>
+            <entry key="67" type="xstring" value="$Localizacao$ IN (&quot;Korea, South&quot;, &quot;Seoul&quot;) =&gt; &quot;South Korea&quot;"/>
+            <entry key="68" type="xstring" value="// 5. REGRA FINAL DE PRESERVAÇÃO (Obrigatória)"/>
+            <entry key="69" type="xstring" value="TRUE =&gt; $Localizacao$"/>
+        </config>
+        <entry key="new-column-name" type="xstring" value="Merge_Location"/>
+        <entry key="replace-column-name" type="xstring" value="Localizacao"/>
+        <entry key="append-column" type="xboolean" value="false"/>
+        <entry key="disallowLongOutputForCompatibility" type="xboolean" value="false"/>
+    </config>
+    <config key="nodeAnnotation">
+        <entry key="text" type="xstring" value="Unir Cidades com Países"/>
+        <entry key="contentType" type="xstring" value="text/plain"/>
+        <entry key="bgcolor" type="xint" value="16777215"/>
+        <entry key="x-coordinate" type="xint" value="0"/>
+        <entry key="y-coordinate" type="xint" value="0"/>
+        <entry key="width" type="xint" value="0"/>
+        <entry key="height" type="xint" value="0"/>
+        <entry key="alignment" type="xstring" value="CENTER"/>
+        <entry key="borderSize" type="xint" value="0"/>
+        <entry key="borderColor" type="xint" value="0"/>
+        <entry key="defFontSize" type="xint" value="-1"/>
+        <entry key="annotation-version" type="xint" value="20230412"/>
+        <config key="styles"/>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.base.node.rules.engine.RuleEngineNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Rule Engine"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Java Snippet Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.jsnippets"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.12.0.v202606171353"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Javasnippet"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.javasnippet.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.12.0.v202606171353"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Rule Engine"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            <entry key="port_object_summary" type="xstring" value="Rows: 250676, Cols: 4"/>
+            <entry key="port_dir_location" type="xstring" value="port_1"/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="db33eb19-6c5c-4d5b-b1ab-6aa7f978904d"/>
+    </config>
+</config>
