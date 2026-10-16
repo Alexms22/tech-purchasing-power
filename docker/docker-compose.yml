@@ -23,17 +23,53 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+    volumes:
+      - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
   nodered:
     image: nodered/node-red:latest
     container_name: tech_power_nodered
+    environment:
+      - NODE_RED_CREDENTIAL_SECRET=nr_secret_9xT4vL8wK1zR3bQ5jT6hN2mP7fC
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
     ports:
       - "1880:1880"
     volumes:
       - nodered_data:/data
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: tech_power_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    container_name: tech_power_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
 volumes:
   pgdata:
   nodered_data:
+  grafana_data:
+  rabbitmq_data:
+  mongodb_data:

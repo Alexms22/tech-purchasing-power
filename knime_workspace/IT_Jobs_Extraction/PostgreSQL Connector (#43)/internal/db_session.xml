@@ -2,7 +2,7 @@
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="db_session">
     <config key="Session Info">
         <entry key="version" type="xint" value="7"/>
-        <entry key="sessionID" type="xstring" value="8fee6d87-79c0-4a0c-9aa8-770308d3b6c0"/>
+        <entry key="sessionID" type="xstring" value="a2d4ec31-1656-492e-b118-d07d5c45f816"/>
         <entry key="dbTypeId" type="xstring" value="postgres"/>
         <entry key="dialectId" type="xstring" value="postgres"/>
         <entry key="dbURL" type="xstring" value="jdbc:postgresql://localhost:5432/tech_purchasing_power"/>
@@ -38,8 +38,8 @@
             <entry key="knime.db.connection.reconnect" type="xboolean" value="false"/>
             <entry key="knime.db.connection.statement.cancellation.enabled" type="xboolean" value="true"/>
             <entry key="knime.db.connection.metadata.configure.enabled" type="xboolean" value="false"/>
-            <entry key="knime.db.dialect.sql.identifier.delimiting.onlyspaces" type="xboolean" value="false"/>
             <entry key="knime.db.connection.metadata.query.flatten" type="xboolean" value="false"/>
+            <entry key="knime.db.dialect.sql.identifier.delimiting.onlyspaces" type="xboolean" value="false"/>
             <entry key="knime.db.connection.logger.enabled" type="xboolean" value="false"/>
             <entry key="knime.db.connection.restore" type="xboolean" value="false"/>
             <entry key="knime.db.agent.writer.fail_on_missing_in_where_clause" type="xboolean" value="true"/>
