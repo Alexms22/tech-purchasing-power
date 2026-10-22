@@ -13,7 +13,13 @@
 
 ### 🎥 Vídeo de demonstração
 
-**https://… (a preencher)**
+**https://scanned.page/p/Yjo87I**
+
+> ⚠️ **Validade da ligação.** O vídeo está alojado num serviço de partilha
+> temporária, pelo que esta ligação **expira ao fim de dez dias** a contar
+> da data de entrega. Caso já não esteja acessível, o ficheiro de vídeo
+> pode ser solicitado ao autor através do endereço de correio eletrónico
+> indicado no relatório (`doc/29382_doc.pdf`).
 
 ---
 
@@ -109,50 +115,51 @@ Quatro origens em **três formatos distintos**:
 Segue o princípio de **Infrastructure as Code**: o Git guarda a configuração e a estrutura; os dados reais ficam nos volumes do Docker, fora do repositório.
 
 ```
-tech-purchasing-power/
-├── docker/
-│   ├── docker-compose.yml          Definição dos 4 contentores
-│   ├── .env                        Credenciais (NÃO versionado)
-│   └── postgres/init/
-│       └── 01_init_tables.sql      Esquema das tabelas (corre no 1.º arranque)
-├── grafana/
-│   ├── provisioning/               Fonte de dados e carregamento automático
-│   ├── dashboards/
-│   │   └── tech_power_purchasing.json
-│   └── README.md                   Como exportar o dashboard
-├── node_red/
-│   ├── flows.json                  Fluxos exportados (sem credenciais)
-│   └── README.md                   Como exportar e restaurar os fluxos
-├── knime_workspace/
-│   └── IT_Jobs_Extraction/         Workflow de ETL do KNIME
-├── src/
-│   ├── nodered/                    Código dos nós function, extraído
-│   └── sql/                        Esquema e consultas do dashboard
-├── data/
-│   ├── kaggle_DataScience_salaries/   Datasets de entrada (CSV)
-│   └── output/                     Amostras dos dados carregados
-├── docs/
+tp01-29382/
+├── README.md                       Este ficheiro
+├── doc/
 │   └── 29382_doc.pdf               Relatório final
-├── .env.example                    Modelo de configuração
-└── .gitignore
+├── dataintegration/                Transformações e jobs do ETL
+│   ├── knime/
+│   │   └── IT_Jobs_Extraction/     Workflow completo do KNIME
+│   ├── nodered/
+│   │   └── flows.json              Os dois fluxos (produtor e consumidor)
+│   ├── grafana/
+│   │   ├── dashboards/             Dashboard exportado (.json)
+│   │   └── provisioning/           Fonte de dados e carregamento automático
+│   └── docker/
+│       ├── docker-compose.yml      Definição dos 4 contentores
+│       └── postgres/init/
+│           └── 01_init_tables.sql  Esquema das tabelas
+├── data/
+│   ├── input/                      Dataset de entrada (CSV do Kaggle)
+│   └── output/                     Amostras dos dados carregados
+├── src/
+│   ├── nodered/                    Código dos 7 nós function
+│   └── sql/                        Esquema e consultas do dashboard
+└── .env.example                    Modelo de configuração
 ```
 
-### O que **não** entra no Git
+O projeto está também disponível em
+**https://github.com/Alexms22/tech-purchasing-power**, onde a estrutura
+segue a organização habitual de um repositório (pastas `docker/`,
+`grafana/`, `node_red/`, `knime_workspace/`, `src/` e `data/` na raiz).
 
-| Não versionado | Porquê |
+### Credenciais e dados não incluídos
+
+Seguindo o princípio de **Infrastructure as Code**, a entrega contém a
+configuração e a estrutura, não os dados nem os segredos:
+
+| Não incluído | Porquê |
 |---|---|
-| Volumes do PostgreSQL, RabbitMQ, Grafana e Node-RED | Ficheiros binários transacionais que mudam constantemente; corrompem-se fora do contexto do motor e inflacionam o histórico |
-| `docker/.env` | Contém passwords |
-| `node_red/flows_cred.json` | Credenciais cifradas |
-| `knime_workspace/.metadata/` | Cache do IDE do KNIME |
+| Volumes do PostgreSQL, RabbitMQ, Grafana e Node-RED | Ficheiros binários transacionais; corrompem-se fora do contexto do motor |
+| Ficheiro `.env` com as passwords | Credenciais (ver `.env.example` para o modelo) |
+| `flows_cred.json` do Node-RED | Credenciais cifradas |
+| Ficheiro de vídeo (56 MB) | Disponibilizado através da ligação indicada acima |
 
-Para guardar os **dados** da BD (e não só a estrutura), usar um dump de texto, fora do Git ou num *release*:
-
-```bash
-docker exec -t tech_power_db pg_dump -U Alex tech_purchasing_power > backup_dados.sql
-```
-
----
+Em `data/output/` seguem amostras dos dados efetivamente carregados: 500
+registos da tabela `ofertas_emprego` (que tem 200 021 no total) e a
+totalidade da `vagas_nodered` (309 registos).
 
 ## 5. Como Executar
 
@@ -166,21 +173,20 @@ docker exec -t tech_power_db pg_dump -U Alex tech_purchasing_power > backup_dado
 
 ### 5.2. Arranque
 
-```bash
-git clone https://github.com/Alexms22/tech-purchasing-power.git
-cd tech-purchasing-power
+A partir da raiz da pasta entregue (`tp01-29382/`):
 
+```bash
 # 1. Configurar credenciais
-cp .env.example docker/.env
-#    editar docker/.env e preencher os valores
+cp .env.example dataintegration/docker/.env
+#    editar esse ficheiro e preencher os valores
 
 # 2. Levantar a infraestrutura
-cd docker
+cd dataintegration/docker
 docker compose up -d
 docker compose ps
 ```
 
-No primeiro arranque, o PostgreSQL executa o `01_init_tables.sql` e cria as duas tabelas; o Grafana cria a fonte de dados automaticamente.
+No primeiro arranque, o PostgreSQL executa o `01_init_tables.sql` e cria as duas tabelas; o Grafana cria a fonte de dados e carrega o dashboard automaticamente.
 
 | Serviço | URL |
 |---|---|
@@ -191,24 +197,34 @@ No primeiro arranque, o PostgreSQL executa o `01_init_tables.sql` e cria as duas
 
 ### 5.3. Via Batch — KNIME
 
-1. Abrir o KNIME e importar `knime_workspace/IT_Jobs_Extraction`.
-2. No nó **CSV Reader**, apontar para o CSV em `data/kaggle_DataScience_salaries/`.
+1. Abrir o KNIME e importar o workflow de `dataintegration/knime/IT_Jobs_Extraction`.
+2. No nó **CSV Reader**, apontar para o ficheiro em `data/input/`.
 3. No nó **PostgreSQL Connector** (*Ligação à BD*): `localhost:5432`, base de dados `tech_purchasing_power`, credenciais do `.env`.
 4. *Execute all*. O ciclo `Counting Loop Start` / `Wait (Timer 1h)` / `Variable Loop End` repete a execução de hora a hora.
 
 ### 5.4. Via Streaming — Node-RED
 
-Importar `node_red/flows.json` e preencher as credenciais em cada nó. Ver [`node_red/README.md`](node_red/README.md) para o detalhe.
+1. Abrir http://localhost:1880 → menu ☰ → **Import** → colar o conteúdo de `dataintegration/nodered/flows.json`.
+2. **Deploy**.
+
+Já vem configurado, por leitura do `.env`: o nó `TechPowerPostgres` (variáveis `DB_USER` e `DB_PASSWORD`) e o envio para o Telegram (`TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`).
+
+Por preencher à mão, porque a exportação do Node-RED nunca inclui o ficheiro de credenciais:
+
+| Nó | O que inserir |
+|---|---|
+| `Broker` (RabbitMQ) | Utilizador e password do RabbitMQ |
+| `http request` do primeiro ramo | Chave da API da Reed (autenticação *basic*) |
 
 ### 5.5. Dashboard — Grafana
 
-O dashboard é carregado automaticamente pelo provisioning. Ver [`grafana/README.md`](grafana/README.md) se precisar de o importar à mão.
+O dashboard é carregado automaticamente pelo *provisioning* em `dataintegration/grafana/`. Se não aparecer, importar à mão em **Dashboards → New → Import → Upload JSON file**, a partir de `dataintegration/grafana/dashboards/`.
 
 ---
 
 ## 6. Notas Importantes
 
-> ⚠️ **Credenciais.** O `flows.json` versionado **não contém o token do Telegram**: o nó `Good Role Alert` lê-o de `env.get("TELEGRAM_BOT_TOKEN")` e o destinatário de `env.get("TELEGRAM_CHAT_ID")`. Para os alertas funcionarem é preciso definir as duas variáveis em `docker/.env` e correr `docker compose restart nodered`.
+> ⚠️ **Credenciais.** O `flows.json` versionado **não contém o token do Telegram**: o nó `Good Role Alert` lê-o de `env.get("TELEGRAM_BOT_TOKEN")` e o destinatário de `env.get("TELEGRAM_CHAT_ID")`. Para os alertas funcionarem é preciso definir as duas variáveis em `dataintegration/docker/.env` e correr `docker compose restart nodered`.
 
 > ⚠️ **Limitação de tráfego das APIs.** Execuções manuais repetidas originam respostas `429 Too Many Requests` nas APIs da Reed e da Postcodes.io. O filtro do nó `Normal Data` e a validação do `Rebuild Params` descartam essas respostas, pelo que o pipeline não falha — mas os registos dessa execução não são carregados.
 
