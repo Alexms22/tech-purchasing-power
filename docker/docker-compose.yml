@@ -1,4 +1,13 @@
-version: '3.8'
+# =====================================================================
+# Tech Purchasing Power - Infraestrutura
+# =====================================================================
+#   docker compose up -d        levantar tudo
+#   docker compose ps           estado dos contentores
+#   docker compose down         parar (mantém os volumes/dados)
+#   docker compose down -v      parar e APAGAR os dados
+#
+# Requer um ficheiro .env nesta pasta (ver .env.example na raiz).
+# =====================================================================
 
 services:
   postgres:
@@ -12,6 +21,13 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      # Scripts executados apenas na PRIMEIRA inicialização (pgdata vazio)
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   grafana:
@@ -19,27 +35,45 @@ services:
     container_name: tech_power_grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      # Usadas pelo provisioning da fonte de dados (ver grafana/provisioning)
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - grafana_data:/var/lib/grafana
+      # Fonte de dados e dashboards versionados no Git (Infrastructure as Code)
+      - ../grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../grafana/dashboards:/var/lib/grafana/dashboards:ro
     restart: unless-stopped
 
   nodered:
     image: nodered/node-red:latest
     container_name: tech_power_nodered
     environment:
-      - NODE_RED_CREDENTIAL_SECRET=nr_secret_9xT4vL8wK1zR3bQ5jT6hN2mP7fC
+      # Chave que cifra o flows_cred.json dentro do volume.
+      # NUNCA deve ficar escrita neste ficheiro: vem do .env (não versionado).
+      - NODE_RED_CREDENTIAL_SECRET=${NODE_RED_CREDENTIAL_SECRET}
+      - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
     ports:
       - "1880:1880"
     volumes:
       - nodered_data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     restart: unless-stopped
 
   rabbitmq:
@@ -49,8 +83,8 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Interface de gestão
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped
@@ -60,4 +94,3 @@ volumes:
   nodered_data:
   grafana_data:
   rabbitmq_data:
-  mongodb_data:

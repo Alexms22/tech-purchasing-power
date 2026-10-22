@@ -48,3 +48,23 @@ Thumbs.db
 # Se o dataset do Custo de Vida for gigante (ex: +50MB), descomentar a linha abaixo para o ignorar. 
 # Caso contrário, o CSV fica para conseguir correr no projeto.
 # knime_workspace/dados/*.csv
+
+# -------------------------------------------------------------------
+# 6. VOLUMES DOS CONTENTORES  (NUNCA versionar)
+# -------------------------------------------------------------------
+# Os dados do PostgreSQL, RabbitMQ e Grafana vivem em volumes geridos
+# pelo Docker, fora desta pasta. Se alguma vez forem montados aqui como
+# bind mounts, ficam excluidos:
+docker/volumes/
+docker/pgdata/
+docker/grafana_data/
+docker/rabbitmq_data/
+docker/nodered_data/
+
+# Backups e dumps da base de dados (podem conter dados reais e ser pesados)
+*.dump
+*.sql.gz
+backup_*.sql
+
+# Copias de seguranca criadas durante edicoes
+*.bak
