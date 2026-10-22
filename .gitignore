@@ -76,3 +76,6 @@ _entrega/
 # Artefacto de entrega
 29382.zip
 _entrega/
+
+# Workflows de exemplo que vem com o KNIME (nao fazem parte do projeto)
+knime_workspace/Example Workflows/
