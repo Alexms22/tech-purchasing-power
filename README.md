@@ -10,11 +10,16 @@
 | **Instituição** | Escola Superior de Tecnologia — Universidade Politécnica do Cávado e do Ave (UPCA) |
 | **Autor** | Alexandre Silva — n.º 29382 |
 | **Orientação** | Luís Ferreira |
-| **Repositório** | https://github.com/Alexms22/tech-purchasing-power |
 
 ### 🎥 Vídeo de demonstração
 
-**https://… (a preencher)**
+**https://scanned.page/p/Yjo87I**
+
+> ⚠️ **Validade da ligação.** O vídeo está alojado num serviço de partilha
+> temporária, pelo que esta ligação **expira ao fim de dez dias** a contar
+> da data de entrega. Caso já não esteja acessível, o ficheiro de vídeo
+> pode ser solicitado ao autor através do endereço de correio eletrónico
+> indicado no relatório (`doc/29382_doc.pdf`).
 
 ---
 
@@ -28,7 +33,7 @@ Este projeto implementa um **pipeline ETL** completo que recolhe ofertas reais d
 
 ## 2. Arquitetura
 
-A solução adota uma **arquitetura híbrida com duas vias complementares** que convergem para a mesma base de dados:
+Duas vias complementares que convergem para a mesma base de dados:
 
 ```
   VIA 1 — BATCH (KNIME)                    VIA 2 — STREAMING (Node-RED)
@@ -49,11 +54,11 @@ A solução adota uma **arquitetura híbrida com duas vias complementares** que 
           │                           Node-RED (fluxo consumidor)
           │                                   │
           ▼                                   ▼
-  ┌──────────────────────────────────────────────────────────┐
-  │  PostgreSQL · tech_power_db · porta 5432                 │
-  │  ├── ofertas_emprego  (11 colunas · escrita pelo KNIME)  │
+  ┌───────────────────────────────────────────────────────────┐
+  │  PostgreSQL · tech_power_db · porta 5432                  │
+  │  ├── ofertas_emprego  (11 colunas · escrita pelo KNIME)   │
   │  └── vagas_nodered    ( 5 colunas · escrita pelo Node-RED)│
-  └──────────────────────────────────────────────────────────┘
+  └───────────────────────────────────────────────────────────┘
           │
           ▼
       Grafana — dashboard "Tech Power Purchasing"
@@ -74,34 +79,34 @@ A solução adota uma **arquitetura híbrida com duas vias complementares** que 
 
 ## 3. Fases do ETL
 
-### 3.1. Extração (Extract)
+### 3.1. Extração
 
-Recolha a partir de **quatro origens** em **três formatos distintos**:
+Quatro origens em **três formatos distintos**:
 
 | Origem | Formato | Mecanismo | Via |
 |---|---|---|---|
-| API REST da Reed | JSON | Pedidos HTTP GET (`GET Request` / `http request`) | Batch e streaming |
+| API REST da Reed | JSON | Pedidos HTTP GET | Batch e streaming |
 | API Postcodes.io | JSON | Geocodificação de códigos postais | Batch e streaming |
-| Dataset Kaggle `LATEST_DATA_SCIENCE_SALARIES` | CSV | Leitura de ficheiro local (`CSV Reader`) | Batch |
-| Numbeo *Cost of Living Index* | HTML | *Web scraping* com expressões XPath | Batch |
+| Dataset Kaggle (salários) | CSV | Leitura de ficheiro local (`CSV Reader`) | Batch |
+| Numbeo *Cost of Living Index* | HTML | *Web scraping* com XPath | Batch |
 
-### 3.2. Transformação (Transform)
+### 3.2. Transformação
 
-* **Limpeza e validação** — remoção de registos sem título, com salário nulo ou com valores mal introduzidos.
-* **Expressões regulares (Regex)** — separação de localizações que contêm códigos postais (`Row Splitter`) e validação do padrão do código postal britânico no Node-RED.
-* **Geocodificação** — resolução dos códigos postais para país através da API Postcodes.io.
-* **Anualização salarial** — inferência da periodicidade a partir da ordem de grandeza (`< 100` = hora × 1950; `100–1500` = dia × 260; `1500–10000` = mês × 12).
+* **Limpeza e validação** — remoção de registos sem título, com salário nulo ou valores mal introduzidos.
+* **Expressões regulares** — o `switch` do Node-RED encaminha por `\d` as localizações que contêm algarismos (códigos postais); o `Postal Code Filter` limpa os caracteres não alfanuméricos antes da consulta à API.
+* **Geocodificação** — resolução dos códigos postais para país via Postcodes.io.
+* **Anualização salarial** — inferência da periodicidade pela ordem de grandeza (`< 100` = hora × 1950; `100–1500` = dia × 260; `1500–10000` = mês × 12).
 * **Conversão cambial** — normalização para euros (taxa GBP→EUR de 1,17).
-* **Padronização** — `Concatenate` dos dois ramos de vagas e três `Rule Engine` para uniformizar nível de experiência (*Entry*, *Mid*, *Senior*), mapear cidades para países e classificar o tipo de mercado.
-* **Cruzamento (Join)** — `Joiner` entre as vagas e os índices Numbeo, usando o país como chave.
-* **Cálculo final** — dedução da taxa de imposto (30%) e ponderação pelo custo de vida e renda, produzindo a **Poupança Anual Estimada (€)**.
+* **Padronização** — `Concatenate` dos dois ramos e três `Rule Engine` (nível de experiência, cidade→país, tipo de mercado).
+* **Cruzamento** — `Joiner` entre as vagas e os índices Numbeo, pelo país.
+* **Cálculo final** — dedução do imposto (30%) e ponderação pelo custo de vida e renda → **Poupança Anual Estimada (€)**.
 
-### 3.3. Carregamento (Load)
+### 3.3. Carregamento
 
-* **RabbitMQ** — fila `fila_vagas` no *exchange* `amq.direct`, que desacopla a extração da persistência na via contínua.
-* **PostgreSQL** — duas tabelas com modelos de escrita distintos (ver arquitetura). A via contínua usa *upsert* (`ON CONFLICT (titulo_vaga, localizacao) DO UPDATE`) para evitar duplicados.
-* **Grafana** — dashboard *Tech Power Purchasing*, com quatro painéis e duas variáveis dinâmicas (`$Pais` e `$Nivel_Experiencia`).
-* **Telegram** — alertas automáticos para o bot `@TechPowerISIBot` quando o salário anual é ≥ 100 000 € ou o título contém tecnologias de nicho (*cobol*, *rust*, *blockchain*, *machine learning*, *quantum*, *fortran*, *elixir*, *power electronics*).
+* **RabbitMQ** — fila `fila_vagas` no *exchange* `amq.direct`, que desacopla extração e persistência.
+* **PostgreSQL** — duas tabelas com modelos de escrita distintos; a via contínua usa `ON CONFLICT (titulo_vaga, localizacao) DO UPDATE`.
+* **Grafana** — dashboard *Tech Power Purchasing* com quatro painéis.
+* **Telegram** — alertas quando o salário anual é ≥ 100 000 € ou o título contém tecnologias de nicho (*cobol*, *rust*, *blockchain*, *machine learning*, *quantum*, *fortran*, *elixir*, *power electronics*).
 
 ---
 
@@ -109,106 +114,121 @@ Recolha a partir de **quatro origens** em **três formatos distintos**:
 
 ```
 tp01-29382/
-├── README.md                          Este ficheiro
+├── README.md                       Este ficheiro
 ├── doc/
-│   └── 29382_doc.pdf                  Relatório final do trabalho
-├── dataintegration/
-│   ├── knime/                         Workflow do KNIME (exportado em .knwf)
-│   ├── nodered/                       Fluxos do Node-RED (flows.json)
+│   └── 29382_doc.pdf               Relatório final
+├── dataintegration/                Transformações e jobs do ETL
+│   ├── knime/
+│   │   └── IT_Jobs_Extraction/     Workflow completo do KNIME
+│   ├── nodered/
+│   │   └── flows.json              Os dois fluxos (produtor e consumidor)
+│   ├── grafana/
+│   │   ├── dashboards/             Dashboard exportado (.json)
+│   │   └── provisioning/           Fonte de dados e carregamento automático
 │   └── docker/
-│       └── docker-compose.yml         Definição dos quatro contentores
+│       ├── docker-compose.yml      Definição dos 4 contentores
+│       └── postgres/init/
+│           └── 01_init_tables.sql  Esquema das tabelas
 ├── data/
-│   ├── input/
-│   │   └── LATEST_DATA_SCIENCE_SALARIES.csv    Dataset histórico (Kaggle)
-│   └── output/
-│       ├── ofertas_emprego.csv        Amostra dos dados carregados (via batch)
-│       └── vagas_nodered.csv          Amostra dos dados carregados (via streaming)
-└── src/
-    ├── sql/
-    │   ├── create_tables.sql          Criação das tabelas e restrições
-    │   └── queries_grafana.sql        Consultas dos painéis do dashboard
-    └── js/
-        ├── normal_data.js             Regras de negócio (nó Normal Data)
-        ├── rebuild_params.js          Reconstrução de parâmetros (consumidor)
-        └── good_role_alert.js         Critérios de alerta (Telegram)
+│   ├── input/                      Dataset de entrada (CSV do Kaggle)
+│   └── output/                     Amostras dos dados carregados
+├── src/
+│   ├── nodered/                    Código dos 7 nós function
+│   └── sql/                        Esquema e consultas do dashboard
+└── .env.example                    Modelo de configuração
 ```
 
----
+O projeto está também disponível em
+**https://github.com/Alexms22/tech-purchasing-power**, onde a estrutura
+segue a organização habitual de um repositório (pastas `docker/`,
+`grafana/`, `node_red/`, `knime_workspace/`, `src/` e `data/` na raiz).
+
+### Credenciais e dados não incluídos
+
+Seguindo o princípio de **Infrastructure as Code**, a entrega contém a
+configuração e a estrutura, não os dados nem os segredos:
+
+| Não incluído | Porquê |
+|---|---|
+| Volumes do PostgreSQL, RabbitMQ, Grafana e Node-RED | Ficheiros binários transacionais; corrompem-se fora do contexto do motor |
+| Ficheiro `.env` com as passwords | Credenciais (ver `.env.example` para o modelo) |
+| `flows_cred.json` do Node-RED | Credenciais cifradas |
+| Ficheiro de vídeo (56 MB) | Disponibilizado através da ligação indicada acima |
+
+Em `data/output/` seguem amostras dos dados efetivamente carregados: 500
+registos da tabela `ofertas_emprego` (que tem 200 021 no total) e a
+totalidade da `vagas_nodered` (309 registos).
 
 ## 5. Como Executar
 
 ### 5.1. Pré-requisitos
 
-| Ferramenta | Versão | Onde corre |
-|---|---|---|
-| Docker Desktop | — | Anfitrião |
-| KNIME Analytics Platform | 5.x | Anfitrião (aplicação desktop) |
-| Node-RED | `nodered/node-red:latest` | Contentor |
-| RabbitMQ | `rabbitmq:3-management-alpine` | Contentor |
-| PostgreSQL | `postgres:16-alpine` | Contentor |
-| Grafana | `grafana/grafana:latest` | Contentor |
+| Ferramenta | Onde corre |
+|---|---|
+| Docker Desktop | Anfitrião |
+| KNIME Analytics Platform 5.x | Anfitrião (aplicação desktop) |
+| Node-RED, RabbitMQ, PostgreSQL, Grafana | Contentores |
 
-### 5.2. Levantar a infraestrutura
+### 5.2. Arranque
+
+A partir da raiz da pasta entregue (`tp01-29382/`):
 
 ```bash
+# 1. Configurar credenciais
+cp .env.example dataintegration/docker/.env
+#    editar esse ficheiro e preencher os valores
+
+# 2. Levantar a infraestrutura
 cd dataintegration/docker
 docker compose up -d
-docker compose ps        # confirmar que os 4 contentores estão em execução
+docker compose ps
 ```
 
-Serviços disponíveis após o arranque:
+No primeiro arranque, o PostgreSQL executa o `01_init_tables.sql` e cria as duas tabelas; o Grafana cria a fonte de dados e carrega o dashboard automaticamente.
 
-| Serviço | URL | Credenciais |
-|---|---|---|
-| Node-RED | http://localhost:1880 | — |
-| RabbitMQ (gestão) | http://localhost:15672 | definidas no `docker-compose.yml` |
-| PostgreSQL | `localhost:5432` | base de dados `tech_purchasing_power` |
-| Grafana | http://localhost:3000 | `admin` / `admin` (primeiro acesso) |
+| Serviço | URL |
+|---|---|
+| Node-RED | http://localhost:1880 |
+| Grafana | http://localhost:3000 |
+| RabbitMQ (gestão) | http://localhost:15672 |
+| PostgreSQL | `localhost:5432` |
 
-### 5.3. Criar as tabelas
+### 5.3. Via Batch — KNIME
 
-```bash
-docker exec -i tech_power_db psql -U postgres -d tech_purchasing_power < src/sql/create_tables.sql
-```
+1. Abrir o KNIME e importar o workflow de `dataintegration/knime/IT_Jobs_Extraction`.
+2. No nó **CSV Reader**, apontar para o ficheiro em `data/input/`.
+3. No nó **PostgreSQL Connector** (*Ligação à BD*): `localhost:5432`, base de dados `tech_purchasing_power`, credenciais do `.env`.
+4. *Execute all*. O ciclo `Counting Loop Start` / `Wait (Timer 1h)` / `Variable Loop End` repete a execução de hora a hora.
 
-### 5.4. Via 1 — Batch (KNIME)
+### 5.4. Via Streaming — Node-RED
 
-1. Abrir o **KNIME Analytics Platform** no anfitrião.
-2. Importar o workflow: *File → Import KNIME Workflow* → selecionar o ficheiro em `dataintegration/knime/`.
-3. Configurar o nó **CSV Reader** com o caminho para `data/input/LATEST_DATA_SCIENCE_SALARIES.csv`.
-4. Configurar o nó **PostgreSQL Connector** (anotado *Ligação à BD*): `localhost:5432`, base de dados `tech_purchasing_power`, e as credenciais definidas no `docker-compose.yml`.
-5. Executar o workflow (*Execute all*). O ciclo `Counting Loop Start` / `Wait (Timer 1h)` / `Variable Loop End` repete a execução de hora a hora.
+1. Abrir http://localhost:1880 → menu ☰ → **Import** → colar o conteúdo de `dataintegration/nodered/flows.json`.
+2. **Deploy**.
 
-### 5.5. Via 2 — Streaming (Node-RED)
+Já vem configurado, por leitura do `.env`: o nó `TechPowerPostgres` (variáveis `DB_USER` e `DB_PASSWORD`) e o envio para o Telegram (`TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`).
 
-1. Aceder a http://localhost:1880.
-2. Importar os fluxos: menu ☰ → *Import* → colar o conteúdo de `dataintegration/nodered/flows.json`.
-3. Configurar as credenciais dos nós:
-   * **amq.direct: fila_vagas** — anfitrião `tech_power_rabbitmq`, porta `5672`.
-   * **TechPowerPostgres** — anfitrião `tech_power_db`, porta `5432`, base de dados `tech_purchasing_power`.
-   * **http request Telegram** — inserir o *token* do bot no URL (ver secção 6).
-4. Clicar em **Deploy**. O nó `Alert 1 every hour` dispara o fluxo automaticamente; para testar de imediato, usar o botão do nó de injeção.
+Por preencher à mão, porque a exportação do Node-RED nunca inclui o ficheiro de credenciais:
 
-### 5.6. Dashboard (Grafana)
+| Nó | O que inserir |
+|---|---|
+| `Broker` (RabbitMQ) | Utilizador e password do RabbitMQ |
+| `http request` do primeiro ramo | Chave da API da Reed (autenticação *basic*) |
 
-1. Aceder a http://localhost:3000.
-2. Adicionar a fonte de dados: *Connections → Data sources → PostgreSQL*
-   * Host: `tech_power_db:5432`
-   * Database: `tech_purchasing_power`
-   * TLS/SSL Mode: `disable`
-3. Criar o dashboard e os painéis com as consultas de `src/sql/queries_grafana.sql`, definindo as variáveis `Pais` e `Nivel_Experiencia` em *Dashboard settings → Variables* (tipo *Query*).
+### 5.5. Dashboard — Grafana
+
+O dashboard é carregado automaticamente pelo *provisioning* em `dataintegration/grafana/`. Se não aparecer, importar à mão em **Dashboards → New → Import → Upload JSON file**, a partir de `dataintegration/grafana/dashboards/`.
 
 ---
 
 ## 6. Notas Importantes
 
-> ⚠️ **Credenciais.** O *token* do bot do Telegram e o `chat_id` **não** estão incluídos neste repositório. Para reproduzir os alertas é necessário criar um bot através do [@BotFather](https://t.me/BotFather) e inserir o *token* no nó `http request Telegram`.
+> ⚠️ **Credenciais.** O `flows.json` versionado **não contém o token do Telegram**: o nó `Good Role Alert` lê-o de `env.get("TELEGRAM_BOT_TOKEN")` e o destinatário de `env.get("TELEGRAM_CHAT_ID")`. Para os alertas funcionarem é preciso definir as duas variáveis em `dataintegration/docker/.env` e correr `docker compose restart nodered`.
 
-> ⚠️ **Limitação de tráfego das APIs.** Execuções manuais repetidas em curtos intervalos originam respostas `429 Too Many Requests` nas APIs da Reed e da Postcodes.io. O filtro de qualidade do nó `Normal Data` e a validação do nó `Rebuild Params` descartam essas respostas inválidas, pelo que o pipeline não fica em erro — mas os registos dessa execução não são carregados.
+> ⚠️ **Limitação de tráfego das APIs.** Execuções manuais repetidas originam respostas `429 Too Many Requests` nas APIs da Reed e da Postcodes.io. O filtro do nó `Normal Data` e a validação do `Rebuild Params` descartam essas respostas, pelo que o pipeline não falha — mas os registos dessa execução não são carregados.
 
-> ℹ️ **Maiúsculas no PostgreSQL.** A tabela `ofertas_emprego` foi criada pelo KNIME com nomes de colunas que combinam maiúsculas e minúsculas (e incluem acentos), pelo que **exigem aspas duplas** nas consultas: `SELECT "Pais_Numbeo" FROM ofertas_emprego`. A tabela `vagas_nodered` usa nomes em minúsculas, que dispensam aspas.
+> ℹ️ **Maiúsculas no PostgreSQL.** A tabela `ofertas_emprego` tem nomes de colunas com maiúsculas e acentos, pelo que **exigem aspas duplas**: `SELECT "Pais_Numbeo" FROM ofertas_emprego`. A `vagas_nodered` usa minúsculas e dispensa aspas.
 
-> ℹ️ **Limitações conhecidas.** A taxa de câmbio (1,17) e a taxa de imposto (30%) são valores fixos; os índices do Numbeo são um retrato do momento da execução, sem série histórica; e a anualização infere a periodicidade pela ordem de grandeza do valor, o que pode classificar incorretamente casos-limite.
+> ℹ️ **Limitações conhecidas.** A taxa de câmbio (1,17) e a taxa de imposto (30%) são fixas; os índices do Numbeo são um retrato do momento da execução; a anualização infere a periodicidade pela ordem de grandeza, o que pode classificar mal casos-limite; e os painéis do dashboard filtram em SQL, sem variáveis dinâmicas.
 
 ---
 
