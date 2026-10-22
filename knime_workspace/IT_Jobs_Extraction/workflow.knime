@@ -8,7 +8,7 @@
         <entry key="authored-by" type="xstring" value="Alex"/>
         <entry key="authored-when" type="xstring" value="2026-10-12 18:38:46 +0100"/>
         <entry key="lastEdited-by" type="xstring" value="Alex"/>
-        <entry key="lastEdited-when" type="xstring" value="2026-10-20 21:05:39 +0100"/>
+        <entry key="lastEdited-when" type="xstring" value="2026-10-22 00:20:18 +0100"/>
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="IDLE"/>
@@ -18,9 +18,9 @@
             <entry key="text" type="xstring" value="&lt;p&gt;Extração Batch Local - CSV LATEST_DATA_SCIENCE_SALARIES (Kaggle)&lt;/p&gt;"/>
             <entry key="contentType" type="xstring" value="text/html"/>
             <entry key="bgcolor" type="xint" value="16777215"/>
-            <entry key="x-coordinate" type="xint" value="95"/>
-            <entry key="y-coordinate" type="xint" value="270"/>
-            <entry key="width" type="xint" value="510"/>
+            <entry key="x-coordinate" type="xint" value="-10"/>
+            <entry key="y-coordinate" type="xint" value="315"/>
+            <entry key="width" type="xint" value="405"/>
             <entry key="height" type="xint" value="40"/>
             <entry key="alignment" type="xstring" value="LEFT"/>
             <entry key="borderSize" type="xint" value="10"/>
@@ -33,9 +33,9 @@
             <entry key="text" type="xstring" value="&lt;p&gt;Extração via API REST - JSON &lt;a target=&quot;_blank&quot; rel=&quot;ugc noopener noreferrer nofollow&quot; href=&quot;http://www.reet.co.uk&quot; draggable=&quot;false&quot; title=&quot;Use &amp;quot;Ctrl + click&amp;quot; to follow link&quot;&gt;www.reet.co.uk&lt;/a&gt;&lt;/p&gt;"/>
             <entry key="contentType" type="xstring" value="text/html"/>
             <entry key="bgcolor" type="xint" value="16777215"/>
-            <entry key="x-coordinate" type="xint" value="95"/>
+            <entry key="x-coordinate" type="xint" value="170"/>
             <entry key="y-coordinate" type="xint" value="60"/>
-            <entry key="width" type="xint" value="370"/>
+            <entry key="width" type="xint" value="275"/>
             <entry key="height" type="xint" value="40"/>
             <entry key="alignment" type="xstring" value="LEFT"/>
             <entry key="borderSize" type="xint" value="10"/>
@@ -1146,13 +1146,13 @@
         </config>
         <config key="connection_49">
             <entry key="sourceID" type="xint" value="62"/>
-            <entry key="destID" type="xint" value="9"/>
+            <entry key="destID" type="xint" value="38"/>
             <entry key="sourcePort" type="xint" value="1"/>
             <entry key="destPort" type="xint" value="0"/>
         </config>
         <config key="connection_50">
             <entry key="sourceID" type="xint" value="62"/>
-            <entry key="destID" type="xint" value="38"/>
+            <entry key="destID" type="xint" value="9"/>
             <entry key="sourcePort" type="xint" value="1"/>
             <entry key="destPort" type="xint" value="0"/>
         </config>
