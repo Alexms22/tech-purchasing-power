@@ -8,7 +8,7 @@ apiVersion: 1
 
 datasources:
   - name: grafana-postgresql-datasource-1
-    uid: tech-power-pg
+    uid: cg1puqxn0v6rke
     type: postgres
     access: proxy
     url: tech_power_db:5432

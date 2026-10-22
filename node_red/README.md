@@ -33,13 +33,37 @@ docker cp tech_power_nodered:/data/flows.json ./flows.json
 
 ## Restaurar os fluxos num computador novo
 
+O `flows.json` versionado contém **os dois fluxos**:
+
+| Separador | O que faz |
+|---|---|
+| *Recebe dados da API e envia SMS para RabbitMQ* | Produtor: extração, transformação, publicação na fila e alertas |
+| *Insere dados na BD* | Consumidor: lê a fila, reconstrói os parâmetros e faz o *upsert* |
+
+Passos:
+
 1. `docker compose up -d`
 2. Abrir http://localhost:1880 → menu ☰ → **Import** → colar o conteúdo de `flows.json`
-3. Preencher as credenciais em cada nó:
-   - **amq.direct: fila_vagas** → `tech_power_rabbitmq:5672`
-   - **TechPowerPostgres** → `tech_power_db:5432`, base de dados `tech_purchasing_power`
-   - **http request Telegram** → inserir o token do bot no URL
-4. **Deploy**
+3. **Deploy**
+
+### O que já vem configurado
+
+Estas ligações leem as credenciais do `.env` e **não precisam de ser preenchidas**:
+
+| Nó | Como obtém as credenciais |
+|---|---|
+| `TechPowerPostgres` | `DB_USER` e `DB_PASSWORD` (tipo *env* na configuração do nó) |
+| `Good Role Alert` → Telegram | `env.get("TELEGRAM_BOT_TOKEN")` e `env.get("TELEGRAM_CHAT_ID")` |
+
+### O que ainda é preciso preencher à mão
+
+A exportação do Node-RED nunca inclui o ficheiro de credenciais, por isso
+estes dois nós ficam por configurar:
+
+| Nó | O que inserir |
+|---|---|
+| `Broker` (RabbitMQ) | Utilizador e password do RabbitMQ (os valores de `RABBITMQ_USER` / `RABBITMQ_PASSWORD`) |
+| `http request` do primeiro ramo | Chave da API da Reed (autenticação *basic*: a chave como utilizador, password vazia) |
 
 ## Alternativa: Node-RED Projects (integração nativa com Git)
 

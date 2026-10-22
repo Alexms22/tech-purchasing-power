@@ -33,4 +33,21 @@ O dashboard aparece na pasta *Tech Purchasing Power* do Grafana.
 > **Se os painéis aparecerem vazios** após a importação, é porque o JSON
 > exportado aponta para o `uid` da fonte de dados antiga. Abrir o JSON e
 > substituir todos os `"uid": "..."` dentro dos blocos `datasource` por
-> `"uid": "tech-power-pg"` (o uid definido no provisioning).
+> `"uid": "cg1puqxn0v6rke"` (o uid definido no provisioning).
+
+---
+
+## Nota sobre o formato do ficheiro
+
+O dashboard em `dashboards/tech_power_purchasing.json` foi exportado pelo
+Grafana 13 no **schema v2** (`apiVersion: dashboard.grafana.app/v2`).
+
+O carregamento automático por *provisioning* foi desenhado para o schema
+clássico. Se, após `docker compose restart grafana`, o dashboard não
+aparecer na pasta *Tech Purchasing Power*, importar manualmente:
+
+**Dashboards → New → Import → Upload JSON file**
+
+A fonte de dados criada pelo provisioning usa o `uid` `cg1puqxn0v6rke`,
+que é exatamente o que o JSON referencia — por isso os painéis ligam-se
+sozinhos, sem ter de escolher a ligação.

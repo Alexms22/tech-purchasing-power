@@ -68,3 +68,11 @@ backup_*.sql
 
 # Copias de seguranca criadas durante edicoes
 *.bak
+
+# Pasta temporaria de montagem do ZIP de entrega
+_entrega/
+
+
+# Artefacto de entrega
+29382.zip
+_entrega/

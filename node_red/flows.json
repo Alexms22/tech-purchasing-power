@@ -1,0 +1,487 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Recebe dados da API e envia SMS para RabbitMQ",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "9edc7f5c67e8f9ad",
+        "type": "tab",
+        "label": "Insere dados na BD",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "aecf2e83b549411f",
+        "type": "postgreSQLConfig",
+        "name": "",
+        "host": "tech_power_db",
+        "hostFieldType": "str",
+        "port": 5432,
+        "portFieldType": "num",
+        "database": "tech_purchasing_power",
+        "databaseFieldType": "str",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": 10,
+        "maxFieldType": "num",
+        "idle": 1000,
+        "idleFieldType": "num",
+        "connectionTimeout": 10000,
+        "connectionTimeoutFieldType": "num",
+        "userFieldType": "env",
+        "userEnv": "DB_USER",
+        "passwordFieldType": "env",
+        "passwordEnv": "DB_PASSWORD"
+    },
+    {
+        "id": "681f66d334e6aebc",
+        "type": "amqp-broker",
+        "name": "Broker",
+        "host": "tech_power_rabbitmq",
+        "port": 5672,
+        "vhost": "/",
+        "tls": false,
+        "credsFromSettings": false
+    },
+    {
+        "id": "368806338f19a4f3",
+        "type": "inject",
+        "z": "f6f2187d.f17ca8",
+        "name": "Alert 1 every hour",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 330,
+        "y": 400,
+        "wires": [
+            [
+                "90e9d4cdb7d3d479"
+            ]
+        ]
+    },
+    {
+        "id": "d7943dfd6f5811e6",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "basic",
+        "senderr": false,
+        "headers": [],
+        "x": 310,
+        "y": 580,
+        "wires": [
+            [
+                "ba11623746115fef"
+            ]
+        ]
+    },
+    {
+        "id": "90e9d4cdb7d3d479",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Keywords",
+        "func": "msg.payload = [\n    { keyword: \"AI\" },\n    { keyword: \"Data Science\" },\n    { keyword: \"Cloud Engineer\" },\n    { keyword: \"Frontend Developer\" },\n    { keyword: \"Backend Developer\" },\n    { keyword: \"Fullstack Developer\" },\n    { keyword: \"Software Developer\" },\n    { keyword: \"Developer\" },\n    { keyword: \"Software\" },\n    { keyword: \"IT\" },\n    { keyword: \"Machine Learning\" },\n    { keyword: \"Tester\" }\n];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 400,
+        "wires": [
+            [
+                "63b82531a8c80275"
+            ]
+        ]
+    },
+    {
+        "id": "c4e91b1b6fc30412",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "String Manipulation",
+        "func": "msg.url = \"https://www.reed.co.uk/api/1.0/search?keywords=\" + encodeURIComponent(msg.payload.keyword);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 480,
+        "wires": [
+            [
+                "d7943dfd6f5811e6"
+            ]
+        ]
+    },
+    {
+        "id": "63b82531a8c80275",
+        "type": "split",
+        "z": "f6f2187d.f17ca8",
+        "name": "Split Keywords",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 340,
+        "y": 480,
+        "wires": [
+            [
+                "c4e91b1b6fc30412"
+            ]
+        ]
+    },
+    {
+        "id": "1052c4712d1a6dc2",
+        "type": "amqp-out",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "broker": "681f66d334e6aebc",
+        "exchangeName": "amq.direct",
+        "exchangeType": "direct",
+        "exchangeRoutingKey": "fila_vagas",
+        "exchangeRoutingKeyType": "str",
+        "exchangeDurable": true,
+        "amqpProperties": "{ \"headers\": {} }",
+        "rpcTimeoutMilliseconds": 3000,
+        "outputs": 0,
+        "x": 1440,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ba11623746115fef",
+        "type": "split",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "msg.payload.results",
+        "x": 470,
+        "y": 580,
+        "wires": [
+            [
+                "731d41c4b9753506"
+            ]
+        ]
+    },
+    {
+        "id": "731d41c4b9753506",
+        "type": "switch",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "property": "payload.results.locationName",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "\\d",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 610,
+        "y": 580,
+        "wires": [
+            [
+                "75226b1911256ab0"
+            ],
+            [
+                "365ed869b721e11f"
+            ]
+        ]
+    },
+    {
+        "id": "b1c055cf4d3e4ec8",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1010,
+        "y": 540,
+        "wires": [
+            [
+                "b7c4c6724cc755c0"
+            ]
+        ]
+    },
+    {
+        "id": "75226b1911256ab0",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Postal Code Filter",
+        "func": "// Garantir que lemos a vaga quer venha encapsulada em 'results' ou não\nlet vaga = msg.payload.results ? msg.payload.results : msg.payload;\n\n// 1. Guardamos a vaga original num \"bolso\" seguro chamado msg.vaga_original\nmsg.vaga_original = vaga;\n\n// 2. Limpamos o código postal (exatamente igual ao teu regexReplace do KNIME)\nlet localizacao = vaga.locationName || \"\";\nlet cp = localizacao.replace(/[^a-zA-Z0-9]/g, \"\");\n\n// 3. Criamos o URL dinâmico para o nó HTTP\nmsg.url = \"https://api.postcodes.io/postcodes/\" + cp;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 790,
+        "y": 540,
+        "wires": [
+            [
+                "b1c055cf4d3e4ec8"
+            ]
+        ]
+    },
+    {
+        "id": "b7c4c6724cc755c0",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Extract Country",
+        "func": "// 1. Recuperar a vaga original do \"bolso\"\nlet vaga = msg.vaga_original;\n\n// 2. Extrair o país da resposta da API (postcodes.io)\nlet pais = \"United Kingdom\"; // Valor de salvaguarda caso a API falhe\nif (msg.payload && msg.payload.result && msg.payload.result.country) {\n    pais = msg.payload.result.country;\n}\n\n// 3. Substituir o código postal pelo país descoberto\nvaga.locationName = pais;\n\n// 4. Restaurar o payload com a vaga atualizada\nmsg.payload = vaga;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 540,
+        "wires": [
+            [
+                "365ed869b721e11f",
+                "098bd8cae7bdd92b"
+            ]
+        ]
+    },
+    {
+        "id": "365ed869b721e11f",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Normal Data",
+        "func": "let vaga = msg.payload.results ? msg.payload.results : msg.payload;\n\nlet salario_libras = vaga.minimumSalary || vaga.maximumSalary || 0;\n\n// 1. FILTRO DE QUALIDADE (Gatekeeper)\nif (salario_libras === 0 || !vaga.jobTitle) {\n    return null; // Descarta anúncios inválidos e pára o fluxo\n}\n\n// 2. NORMALIZAÇÃO DE SALÁRIOS (Lógica Inteligente)\nif (salario_libras > 0 && salario_libras < 100) {\n    salario_libras = salario_libras * 1950;\n} else if (salario_libras >= 100 && salario_libras <= 1500) {\n    salario_libras = salario_libras * 260;\n} else if (salario_libras > 1500 && salario_libras <= 10000) {\n    salario_libras = salario_libras * 12;\n}\n\nlet salario_euros = Math.round(salario_libras * 1.17);\n\n// 3. NORMALIZAÇÃO DE LOCALIZAÇÃO (Filtro Supremo)\nlet localizacao_original = vaga.locationName || \"Desconhecido\";\nlet locLower = localizacao_original.toLowerCase();\n\n// Regra base: Tudo é assumido como Reino Unido (mata códigos postais e cidades inglesas)\nlet pais_final = \"United Kingdom\";\n\n// Exceção: Apenas se detetar a Irlanda é que altera\nif (locLower.includes(\"ireland\") || locLower.includes(\"dublin\") || locLower.includes(\"cork\") || locLower.includes(\"galway\")) {\n    pais_final = \"Ireland\";\n}\n\n// 4. MAPEAR PARA O POSTGRESQL E TELEGRAM (Array exato de 5 posições)\nlet valores = [\n    vaga.jobTitle,\n    pais_final,      // $2\n    salario_euros,   // $3\n    \"Mid\",           // $4\n    \"Mercado Local / Standard\" // $5\n];\n\nmsg.payload = valores;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1210,
+        "y": 600,
+        "wires": [
+            [
+                "1052c4712d1a6dc2",
+                "bcc4b5b9bbb87e04"
+            ]
+        ]
+    },
+    {
+        "id": "098bd8cae7bdd92b",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1420,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "bcc4b5b9bbb87e04",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Good Role Alert",
+        "func": "// Recuperar os dados com base no array de 6 posições revelado no debug\nlet titulo = msg.payload[0] || \"Desconhecido\";\nlet pais = msg.payload[1] || \"Desconhecido\";\nlet salario = Number(msg.payload[2]) || 0;\n\n// Extrair mais informações com base nas posições reveladas no teu array\nlet experiencia = msg.payload[3] || \"N/A\";\nlet mercado = msg.payload[4] || \"N/A\";\n\n// Aceder à memória do Node-RED para ver quantas vagas já foram geradas (inicia a 0)\nlet totalAlertas = context.get(\"contadorVagas\") || 0;\n\n// 1. DEFINIR O QUE É UM \"VALOR ALTO\" (Ex: Salário >= 100.000€)\nlet isValorAlto = salario >= 100000;\n\n// 2. DEFINIR O QUE É UM \"ROLE INCOMUM\"\nlet keywordsRaras = [\"cobol\", \"rust\", \"blockchain\", \"machine learning\", \"quantum\", \"fortran\", \"elixir\", \"power electronics\"];\nlet isRoleIncomum = keywordsRaras.some(palavra => titulo.toLowerCase().includes(palavra));\n\n// 3. SE CUMPRIR UMA DAS REGRAS, GERA O ALERTA\nif (isValorAlto || isRoleIncomum) {\n    \n    // Aumenta o contador de vagas destacadas e guarda o novo valor na memória\n    totalAlertas++;\n    context.set(\"contadorVagas\", totalAlertas);\n    \n    // Identificar o motivo do alerta\n    let motivo = isValorAlto ? \"💰 Alto Valor Financeiro\" : \"🦄 Vaga Incomum/Rara\";\n    if (isValorAlto && isRoleIncomum) motivo = \"🔥 Jackpot (Rara + Alto Valor)\";\n\n    // Estruturar a mensagem para o Telegram com mais detalhes e rodapé\n    msg.payload = {\n        chat_id: env.get(\"TELEGRAM_CHAT_ID\"),\n        text: `🚨 *ALERTA DE VAGA DESTACADA* 🚨\\n` +\n              `*Motivo:* ${motivo}\\n\\n` +\n              `📋 *Principais Infos:*\\n` +\n              `• *Cargo:* ${titulo}\\n` +\n              `• *País:* ${pais}\\n` +\n              `• *Nível:* ${experiencia}\\n` +\n              `• *Mercado:* ${mercado}\\n` +\n              `• *Salário Anual:* ${salario} €\\n\\n`,\n        parse_mode: \"Markdown\"\n    };\n    \n    // URL construido a partir do .env (o token NUNCA fica no flows.json)\n    msg.url = \"https://api.telegram.org/bot\" + env.get(\"TELEGRAM_BOT_TOKEN\") + \"/sendMessage\";\n\n    return msg; \n}\n\n// Se não for destacada, ignora\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 700,
+        "wires": [
+            [
+                "d54ab46249acc4af"
+            ]
+        ]
+    },
+    {
+        "id": "4e0c347c95f0610d",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1420,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "d54ab46249acc4af",
+        "type": "http request",
+        "z": "f6f2187d.f17ca8",
+        "name": "http request Telegram",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1460,
+        "y": 700,
+        "wires": [
+            [
+                "4e0c347c95f0610d"
+            ]
+        ]
+    },
+    {
+        "id": "6797d898c8396825",
+        "type": "postgresql",
+        "z": "9edc7f5c67e8f9ad",
+        "name": "TechPowerPostgres",
+        "query": "INSERT INTO vagas_nodered (titulo_vaga, localizacao, salario_euros, nivel_experiencia, tipo_mercado) \nVALUES ($1, $2, $3, $4, $5) \nON CONFLICT (titulo_vaga, localizacao) \nDO UPDATE SET \n    salario_euros = EXCLUDED.salario_euros,\n    nivel_experiencia = EXCLUDED.nivel_experiencia,\n    tipo_mercado = EXCLUDED.tipo_mercado;",
+        "postgreSQLConfig": "aecf2e83b549411f",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 900,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c5e825e55726443a",
+        "type": "amqp-in",
+        "z": "9edc7f5c67e8f9ad",
+        "name": "",
+        "broker": "681f66d334e6aebc",
+        "prefetch": 0,
+        "noAck": true,
+        "exchangeName": "amq.direct",
+        "exchangeType": "direct",
+        "exchangeRoutingKey": "fila_vagas",
+        "exchangeDurable": true,
+        "queueName": "fila_vagas",
+        "queueExclusive": true,
+        "queueDurable": false,
+        "queueAutoDelete": true,
+        "headers": "{}",
+        "x": 400,
+        "y": 400,
+        "wires": [
+            [
+                "05e597146e4db62d"
+            ]
+        ]
+    },
+    {
+        "id": "05e597146e4db62d",
+        "type": "function",
+        "z": "9edc7f5c67e8f9ad",
+        "name": "Rebuild Params",
+        "func": "let dados = msg.payload;\n\n// 1. Converter o Buffer para texto\nif (Buffer.isBuffer(dados)) {\n    dados = dados.toString();\n}\n\n// 2. Converter o texto de volta para Array\nif (typeof dados === 'string') {\n    try {\n        dados = JSON.parse(dados);\n    } catch (e) {\n        return null; // Descarta se não for JSON válido\n    }\n}\n\n// 3. Garantir que é mesmo um array (protege contra erros antigos na fila)\nif (!Array.isArray(dados)) {\n    return null;\n}\n\n// 4. Parâmetros blindados com valores por defeito para evitar erros de SQL\nlet parametrosFinais = [\n    dados[0] || \"Sem Titulo\", \n    dados[1] || \"Desconhecido\", \n    Number(dados[2]) || 0,      \n    dados[3] || \"N/A\",          \n    dados[4] || \"N/A\"           \n];\n\nmsg.params = parametrosFinais;\nmsg.payload = parametrosFinais; \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 400,
+        "wires": [
+            [
+                "6797d898c8396825",
+                "2c15cc8785642698"
+            ]
+        ]
+    },
+    {
+        "id": "2c15cc8785642698",
+        "type": "debug",
+        "z": "9edc7f5c67e8f9ad",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "3813f1c3475cd4bc",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-postgresql": "0.16.2",
+            "@meowwolf/node-red-contrib-amqp": "2.4.2"
+        }
+    }
+]
